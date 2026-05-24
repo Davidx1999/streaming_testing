@@ -43,7 +43,7 @@ export const SetupView = () => {
 
                     <div class="mt-6 pt-4 border-t border-gray-100 flex flex-col items-center">
                         <p class="text-xs text-gray-500 mb-3 text-center max-w-lg">Ao clicar em avançar, você declara ser <strong>maior de 18 anos</strong> e autoriza o início da atividade sob estas condições de privacidade.</p>
-                        <button onclick="window.app.prepareTest('radiant')" class="w-full sm:w-auto px-8 py-3 rounded-xl font-medium text-[#ffffff] bg-[#6455E5] hover:opacity-90 transition-all shadow-md focus:outline-none focus:ring-2 focus:ring-[#6455E5] focus:ring-offset-2 flex items-center justify-center">
+                        <button onclick="window.app.prepareTest()" class="w-full sm:w-auto px-8 py-3 rounded-xl font-medium text-[#ffffff] bg-[#6455E5] hover:opacity-90 transition-all shadow-md focus:outline-none focus:ring-2 focus:ring-[#6455E5] focus:ring-offset-2 flex items-center justify-center">
                             Avançar para a Tarefa
                             <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                         </button>

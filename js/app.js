@@ -527,7 +527,6 @@ class App {
 
     prepareTest(pattern) {
         this.setState({
-            pattern: 'dark',
             view: 'instruction'
         });
     }
@@ -545,6 +544,10 @@ class App {
             isDarkMenuOpen: false,
             abandonou: false
         });
+
+        if (typeof mudarFavicon === 'function') {
+            mudarFavicon(this.state.pattern);
+        }
 
         setTimeout(() => {
             window.start_time_ms = performance.now();
@@ -671,12 +674,14 @@ class App {
             alert("Você já participou deste experimento. Agradecemos sua colaboração!");
             return;
         }
+        const varianteAtiva = localStorage.getItem('variante_sorteada_experimento') || 'dark';
         this.setState({
-            pattern: 'dark',
+            pattern: varianteAtiva,
             view: 'setup',
             endMessage: '',
             abandonou: false
         });
+        if (typeof mudarFavicon === 'function') mudarFavicon('default');
     }
 
     onTcleChange(decision) {
@@ -815,7 +820,7 @@ class App {
                 contentHtml = SetupView();
                 break;
             case 'instruction':
-                contentHtml = InstructionView();
+                contentHtml = InstructionView(this.state.pattern);
                 break;
             case 'loading':
                 if (this.state.pattern === 'radiant') {
@@ -881,8 +886,10 @@ function mudarFavicon(variante) {
     }
     if (variante === 'radiant') {
         link.href = './assets/radiantfavicon.svg';
-    } else {
+    } else if (variante === 'dark') {
         link.href = './assets/darkfavicon.svg';
+    } else {
+        link.href = './assets/favicon.svg';
     }
 }
 
@@ -893,7 +900,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
-    const URL_SCRIPT = "COLE_AQUI_A_URL_DO_SEU_GOOGLE_SCRIPT_EXEC";
+    const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbzttCYAEDYTG1wXXpL5lqrNYbmOf779yMfGEG_SwN7bfrluiNo5ilXky7ezPxRk3TiN/exec";
     let varianteAtiva = localStorage.getItem('variante_sorteada_experimento');
 
     // SE O USUÁRIO FOR NOVO (Não tem localStorage ainda)
@@ -929,6 +936,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const app = new App();
     app.setState({ pattern: varianteAtiva });
 
-    // Seu método de mudar favicon
-    if (typeof mudarFavicon === 'function') mudarFavicon(varianteAtiva);
+    // Seu método de mudar favicon (inicia com o favicon neutro/default até começar o teste)
+    if (typeof mudarFavicon === 'function') mudarFavicon('default');
 });

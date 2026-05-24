@@ -1,5 +1,5 @@
-export const InstructionView = () => {
-    const platformName = "Radiant Plus";
+export const InstructionView = (pattern) => {
+    const platformName = pattern === 'radiant' ? 'Radiant Plus' : 'Dark Max';
 
     return `
         <div class="flex-grow flex items-center justify-center p-2 sm:p-4 w-full max-w-4xl mx-auto animate-fade-in text-gray-800">
