@@ -332,7 +332,7 @@ window.enviarTelemetria = function (usuarioAbandonou = false, surveyData = {}) {
     const ram_mb = (memoria_bytes / (1024 * 1024)).toFixed(2);
     const tempo_usuario_seg = (tempo_cpu / 1000).toFixed(2);
 
-    const nomeVariante = 'Dark Max';
+    const nomeVariante = (window.app && window.app.state.pattern === 'radiant') ? 'Radiant Plus' : 'Dark Max';
     const respondeuSurvey = 'Sim';
 
     const FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSew5wW0PPVcnijXjbyhStfCS9fuKorg4Q_00FVgPPtgVyzzPw/formResponse';
