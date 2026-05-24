@@ -886,37 +886,49 @@ function mudarFavicon(variante) {
     }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    // 1. Trava de Duplicidade pós-envio (Se já terminou a pesquisa inteira)
+document.addEventListener('DOMContentLoaded', async () => {
+    // 1. Trava de Duplicidade pós-envio
     if (localStorage.getItem('testeConcluido') === 'true') {
-        document.body.innerHTML = "<div class='min-h-screen bg-[#0a0a0a] flex items-center justify-center p-8'><h1 class='text-[#FFFBF5] text-3xl font-bold text-center'>Você já participou deste experimento. Agradecemos sua colaboração!</h1></div>";
+        document.body.innerHTML = "<div class='min-h-screen bg-[#0a0a0a] flex items-center justify-center p-8'><h1 class='text-[#FFFBF5] text-3xl font-bold text-center'>Você já participou deste experimento.</h1></div>";
         return;
     }
 
-    // 2. CAPTURA A VARIANTE (Do Google Script ou da Memória Local)
+    const URL_SCRIPT = "COLE_AQUI_A_URL_DO_SEU_GOOGLE_SCRIPT_EXEC";
     let varianteAtiva = localStorage.getItem('variante_sorteada_experimento');
 
+    // SE O USUÁRIO FOR NOVO (Não tem localStorage ainda)
     if (!varianteAtiva) {
-        // Se é a primeira vez do usuário, pegamos a variante que o Google Script mandou na URL
-        // Ex de URL que o Google vai mandar: .../streaming-experiment-ihc/?v=Radiant
-        const urlParams = new URLSearchParams(window.location.search);
-        const varianteUrl = urlParams.get('v'); // Lê o "?v="
+        try {
+            // Pergunta de forma invisível para o Google Script qual foi a última variante real
+            const resposta = await fetch(`${URL_SCRIPT}?acao=lerUltima`);
+            const ultimaVarianteBanco = await resposta.text(); // Retorna "Radiant" ou "Dark"
 
-        if (varianteUrl) {
-            varianteAtiva = varianteUrl.toLowerCase(); // 'radiant' ou 'dark'
-            // Salva na memória para blindar contra F5, voltar e abre-e-fecha
+            // Aplica a lógica de blocos irretocável baseada no BANCO REAL
+            varianteAtiva = (ultimaVarianteBanco === "Radiant") ? "dark" : "radiant";
+
+            // Avisa o Google Script para atualizar o banco com a variante desse novo usuário
+            // Passamos a variante com a primeira letra maiúscula para manter o seu padrão
+            const varianteFormatada = varianteAtiva === "radiant" ? "Radiant" : "Dark";
+            await fetch(`${URL_SCRIPT}?acao=gravar&v=${varianteFormatada}`);
+
+            // Salva IMEDIATAMENTE no localStorage da máquina dele na Página 1
             localStorage.setItem('variante_sorteada_experimento', varianteAtiva);
-        } else {
-            // Fallback de segurança: se o cara acessou o link do github direto sem passar pelo Google
+
+        } catch (erro) {
+            console.error("Erro na sincronização de blocos, aplicando fallback random:", erro);
             varianteAtiva = Math.random() < 0.5 ? 'radiant' : 'dark';
             localStorage.setItem('variante_sorteada_experimento', varianteAtiva);
         }
     }
 
-    // 3. INICIALIZA O APP E ALTERA O FAVICON
+    // SE O CARA JÁ TIVER LOCALSTORAGE (F5, botão voltar, reabrir aba)
+    // O código pula o fetch inteiro ali de cima, não bate no Google, não mexe no banco
+    // e carrega instantaneamente a variante que ele já era.
+
+    // 3. INICIALIZA O APP COM A VARIANTE BLINDADA
     const app = new App();
     app.setState({ pattern: varianteAtiva });
 
-    // Altera o favicon dinamicamente
-    mudarFavicon(varianteAtiva);
+    // Seu método de mudar favicon
+    if (typeof mudarFavicon === 'function') mudarFavicon(varianteAtiva);
 });
