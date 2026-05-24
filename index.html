@@ -57,7 +57,16 @@
     class="bg-[#0a0a0a] text-[#FFFBF5] min-h-screen flex flex-col font-sans transition-colors duration-500">
 
     <div id="app" class="flex flex-col min-h-screen">
-        <!-- Renderizado dinamicamente pelo app.js -->
+        <!-- Loader inicial de Sincronização do Experimento -->
+        <div class="flex-grow flex flex-col items-center justify-center p-6 text-center bg-[#0a0a0a]">
+            <div class="flex flex-col items-center max-w-sm">
+                <div class="relative w-16 h-16 mb-6">
+                    <div class="w-16 h-16 rounded-full border-4 border-gray-800 border-t-[#6455E5] animate-spin"></div>
+                </div>
+                <h2 class="text-xl font-bold text-[#FFFBF5] tracking-wide mb-2">Carregando Experimento...</h2>
+                <p class="text-sm text-gray-400">Sincronizando com o servidor. Por favor, aguarde alguns instantes.</p>
+            </div>
+        </div>
     </div>
 
 </body>
