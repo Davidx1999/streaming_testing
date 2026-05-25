@@ -910,9 +910,6 @@ window.iniciarExperimentoComIdentificador = async function (emailUsuario) {
 
     const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbzttCYAEDYTG1wXXpL5lqrNYbmOf779yMfGEG_SwN7bfrluiNo5ilXky7ezPxRk3TiN/exec";
 
-    // Força o app a mostrar a tela de carregamento animada enquanto o Google responde
-    if (window.app) window.app.setState({ view: 'loading' });
-
     let varianteAtiva = "";
 
     try {
