@@ -45,7 +45,8 @@ var e=(e,t)=>()=>(e&&(t=e(e=0)),t),t=(e,t)=>()=>(t||(e((t={exports:{}}).exports,
                             <label for="email-participante" class="block text-sm font-semibold text-gray-700 mb-1.5">E-mail do Participante</label>
                             <input type="email" id="email-participante" name="email-participante" required 
                                 class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-[#6455E5]/20 focus:border-[#6455E5] outline-none transition-all shadow-sm placeholder-gray-400 text-gray-800" 
-                                placeholder="digite seu e-mail..." value="${localStorage.getItem(`email_usuario_experimento`)||``}" />
+                                placeholder="digite seu e-mail..." value="${localStorage.getItem(`email_usuario_experimento`)||``}" 
+                                onkeypress="if(event.key === 'Enter') window.iniciarExperimentoComIdentificador(this.value)" />
                         </div>
                         <p class="text-xs text-gray-500 mb-3 text-center max-w-lg">Ao clicar em avançar, você declara ser <strong>maior de 18 anos</strong> e autoriza o início da atividade sob estas condições de privacidade.</p>
                         <button id="btn-iniciar-experimento" onclick="window.iniciarExperimentoComIdentificador(document.getElementById('email-participante').value)" class="w-full sm:w-auto px-8 py-3 rounded-xl font-medium text-[#ffffff] bg-[#6455E5] hover:opacity-90 transition-all shadow-md focus:outline-none focus:ring-2 focus:ring-[#6455E5] focus:ring-offset-2 flex items-center justify-center">
