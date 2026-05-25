@@ -334,6 +334,7 @@ window.enviarTelemetria = function (usuarioAbandonou = false, surveyData = {}) {
 
     const nomeVariante = (window.app && window.app.state.pattern === 'radiant') ? 'Radiant Plus' : 'Dark Max';
     const respondeuSurvey = 'Sim';
+    const emailUsuario = localStorage.getItem('email_usuario_experimento') || '';
 
     const FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSew5wW0PPVcnijXjbyhStfCS9fuKorg4Q_00FVgPPtgVyzzPw/formResponse';
     const dados = new URLSearchParams();
@@ -347,6 +348,7 @@ window.enviarTelemetria = function (usuarioAbandonou = false, surveyData = {}) {
     dados.append('entry.1179815513', window.clics_errados);
     dados.append('entry.713314953', usuarioAbandonou ? 'Sim' : 'Não');
     dados.append('entry.1731007937', respondeuSurvey);
+    dados.append('entry.442889793', emailUsuario);
 
     // 2. Questionário Pós-Tarefa
     dados.append('entry.1676829727', surveyData.idade || '');
@@ -421,6 +423,7 @@ window.enviarTelemetria = function (usuarioAbandonou = false, surveyData = {}) {
             const debugOutput = {
                 "Mapped_Data_For_Backend": finalPayload,
                 "Human_Readable_Telemetry": {
+                    email: emailUsuario,
                     variante: nomeVariante,
                     tempo_cpu: tempo_cpu,
                     memoria_ram: ram_mb,
@@ -441,6 +444,7 @@ window.enviarTelemetria = function (usuarioAbandonou = false, surveyData = {}) {
             if (summaryDiv) {
                 summaryDiv.innerHTML = `
                     <ul class="space-y-1.5 leading-relaxed font-sans text-gray-700 text-left">
+                        <li><span class="opacity-60 font-medium">E-mail:</span> <strong class="text-[#6455E5] font-bold">${emailUsuario}</strong></li>
                         <li><span class="opacity-60 font-medium">Serviço de Streaming:</span> <strong class="text-[#6455E5] font-bold">${nomeVariante}</strong></li>
                         <li><span class="opacity-60 font-medium">Tempo Total (Usuário):</span> <strong class="text-[#6455E5] font-bold">${tempo_usuario_seg} s</strong></li>
                         <li><span class="opacity-60 font-medium">Cliques Totais:</span> <strong class="text-[#6455E5] font-bold">${window.clics_totais}</strong></li>
