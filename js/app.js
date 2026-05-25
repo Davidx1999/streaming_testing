@@ -895,9 +895,9 @@ function mudarFavicon(variante) {
 window.mudarFavicon = mudarFavicon;
 
 // Função global para validar o e-mail e buscar a variante certa no Google
-window.iniciarExperimentoComIdentificador = async function(emailUsuario) {
+window.iniciarExperimentoComIdentificador = async function (emailUsuario) {
     const idLimpo = emailUsuario ? emailUsuario.trim().toLowerCase() : '';
-    
+
     // Validação básica de e-mail para o usuário não avançar em branco
     if (!idLimpo || !idLimpo.includes('@')) {
         alert("Por favor, insira um e-mail válido para iniciar o experimento.");
@@ -905,7 +905,7 @@ window.iniciarExperimentoComIdentificador = async function(emailUsuario) {
     }
 
     const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbzttCYAEDYTG1wXXpL5lqrNYbmOf779yMfGEG_SwN7bfrluiNo5ilXky7ezPxRk3TiN/exec";
-    
+
     // Força o app a mostrar a tela de carregamento animada enquanto o Google responde
     if (window.app) window.app.setState({ view: 'loading' });
 
@@ -931,7 +931,7 @@ window.iniciarExperimentoComIdentificador = async function(emailUsuario) {
 
     // Inicializa o app de fato com a variante que o Google determinou para aquele e-mail
     if (window.app) {
-        window.app.setState({ 
+        window.app.setState({
             pattern: varianteAtiva,
             view: 'instruction' // Avança direto para a tela de instruções (Página 2)
         });
