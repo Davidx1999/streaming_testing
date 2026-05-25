@@ -409,6 +409,14 @@ window.enviarTelemetria = function (usuarioAbandonou = false, surveyData = {}) {
     fetch(FORM_URL, { method: 'POST', mode: 'no-cors', body: dados })
         .then(() => {
             localStorage.setItem('testeConcluido', 'true');
+
+            // NOVA LINHA: Pega o e-mail que salvamos no Setup e avisa o Google Script para dar baixa
+            const emailSalvo = localStorage.getItem('email_usuario_experimento');
+            if (emailSalvo) {
+                const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbzttCYAEDYTG1wXXpL5lqrNYbmOf779yMfGEG_SwN7bfrluiNo5ilXky7ezPxRk3TiN/exec";
+                fetch(`${URL_SCRIPT}?acao=concluir&id=${emailSalvo}`).catch(e => console.error(e));
+            }
+
             if (btnSubmit) {
                 btnSubmit.disabled = false;
                 btnSubmit.innerHTML = 'Enviar Respostas ✓';
@@ -923,9 +931,20 @@ window.iniciarExperimentoComIdentificador = async function (emailUsuario) {
     try {
         // Envia o e-mail pro Google checar se já existe ou salvar no bloco
         const resposta = await fetch(`${URL_SCRIPT}?acao=checarOuGravar&id=${idLimpo}`);
-        const varianteDoUsuario = await resposta.text(); // Retorna "Radiant" ou "Dark"
+        const resultado = await resposta.text();
 
-        varianteAtiva = varianteDoUsuario.toLowerCase(); // Garante 'radiant' ou 'dark'
+        // SE O GOOGLE DISSER QUE O E-MAIL JÁ FOI USADO E CONCLUÍDO:
+        if (resultado === "JA_CONCLUIU") {
+            // Trava o navegador atual também na memória local
+            localStorage.setItem('testeConcluido', 'true');
+            
+            // Renderiza a tela de bloqueio imediatamente
+            document.body.innerHTML = "<div class='min-h-screen bg-[#0a0a0a] flex items-center justify-center p-8'><h1 class='text-[#FFFBF5] text-3xl font-bold text-center'>Você já participou deste experimento. Agradecemos sua colaboração!</h1></div>";
+            alert("Este e-mail já concluiu o experimento anteriormente.");
+            return;
+        }
+
+        varianteAtiva = resultado.toLowerCase(); // Garante 'radiant' ou 'dark'
 
         // Salva no localStorage local por conveniência (trava de F5)
         localStorage.setItem('variante_sorteada_experimento', varianteAtiva);
