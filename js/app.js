@@ -892,6 +892,54 @@ function mudarFavicon(variante) {
         link.href = './assets/favicon.svg';
     }
 }
+window.mudarFavicon = mudarFavicon;
+
+// Função global para validar o e-mail e buscar a variante certa no Google
+window.iniciarExperimentoComIdentificador = async function(emailUsuario) {
+    const idLimpo = emailUsuario ? emailUsuario.trim().toLowerCase() : '';
+    
+    // Validação básica de e-mail para o usuário não avançar em branco
+    if (!idLimpo || !idLimpo.includes('@')) {
+        alert("Por favor, insira um e-mail válido para iniciar o experimento.");
+        return;
+    }
+
+    const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbzttCYAEDYTG1wXXpL5lqrNYbmOf779yMfGEG_SwN7bfrluiNo5ilXky7ezPxRk3TiN/exec";
+    
+    // Força o app a mostrar a tela de carregamento animada enquanto o Google responde
+    if (window.app) window.app.setState({ view: 'loading' });
+
+    let varianteAtiva = "";
+
+    try {
+        // Envia o e-mail pro Google checar se já existe ou salvar no bloco
+        const resposta = await fetch(`${URL_SCRIPT}?acao=checarOuGravar&id=${idLimpo}`);
+        const varianteDoUsuario = await resposta.text(); // Retorna "Radiant" ou "Dark"
+
+        varianteAtiva = varianteDoUsuario.toLowerCase(); // Garante 'radiant' ou 'dark'
+
+        // Salva no localStorage local por conveniência (trava de F5)
+        localStorage.setItem('variante_sorteada_experimento', varianteAtiva);
+        localStorage.setItem('email_usuario_experimento', idLimpo);
+
+    } catch (erro) {
+        console.error("Erro na sincronização por e-mail, aplicando fallback:", erro);
+        // Fallback seguro caso a internet do usuário oscile na largada
+        varianteAtiva = Math.random() < 0.5 ? 'radiant' : 'dark';
+        localStorage.setItem('variante_sorteada_experimento', varianteAtiva);
+    }
+
+    // Inicializa o app de fato com a variante que o Google determinou para aquele e-mail
+    if (window.app) {
+        window.app.setState({ 
+            pattern: varianteAtiva,
+            view: 'instruction' // Avança direto para a tela de instruções (Página 2)
+        });
+    }
+
+    // Muda o favicon dinamicamente se a função existir
+    if (typeof window.mudarFavicon === 'function') window.mudarFavicon(varianteAtiva);
+};
 
 document.addEventListener('DOMContentLoaded', async () => {
     // 1. Trava de Duplicidade pós-envio
@@ -900,39 +948,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
-    const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbzttCYAEDYTG1wXXpL5lqrNYbmOf779yMfGEG_SwN7bfrluiNo5ilXky7ezPxRk3TiN/exec";
-    let varianteAtiva = localStorage.getItem('variante_sorteada_experimento');
+    let varianteAtiva = localStorage.getItem('variante_sorteada_experimento') || 'dark';
 
-    // SE O USUÁRIO FOR NOVO (Não tem localStorage ainda)
-    if (!varianteAtiva) {
-        try {
-            // Pergunta de forma invisível para o Google Script qual foi a última variante real
-            const resposta = await fetch(`${URL_SCRIPT}?acao=lerUltima`);
-            const ultimaVarianteBanco = await resposta.text(); // Retorna "Radiant" ou "Dark"
-
-            // Aplica a lógica de blocos irretocável baseada no BANCO REAL
-            varianteAtiva = (ultimaVarianteBanco === "Radiant") ? "dark" : "radiant";
-
-            // Avisa o Google Script para atualizar o banco com a variante desse novo usuário
-            // Passamos a variante com a primeira letra maiúscula para manter o seu padrão
-            const varianteFormatada = varianteAtiva === "radiant" ? "Radiant" : "Dark";
-            await fetch(`${URL_SCRIPT}?acao=gravar&v=${varianteFormatada}`);
-
-            // Salva IMEDIATAMENTE no localStorage da máquina dele na Página 1
-            localStorage.setItem('variante_sorteada_experimento', varianteAtiva);
-
-        } catch (erro) {
-            console.error("Erro na sincronização de blocos, aplicando fallback random:", erro);
-            varianteAtiva = Math.random() < 0.5 ? 'radiant' : 'dark';
-            localStorage.setItem('variante_sorteada_experimento', varianteAtiva);
-        }
-    }
-
-    // SE O CARA JÁ TIVER LOCALSTORAGE (F5, botão voltar, reabrir aba)
-    // O código pula o fetch inteiro ali de cima, não bate no Google, não mexe no banco
-    // e carrega instantaneamente a variante que ele já era.
-
-    // 3. INICIALIZA O APP COM A VARIANTE BLINDADA
+    // 3. INICIALIZA O APP
     const app = new App();
     app.setState({ pattern: varianteAtiva });
 

@@ -1,4 +1,5 @@
 export const SetupView = () => {
+    const emailSalvo = localStorage.getItem('email_usuario_experimento') || '';
     return `
         <div class="flex-grow flex items-center justify-center p-2 sm:p-4 w-full max-w-4xl mx-auto animate-fade-in">
             <div class="w-full bg-white shadow-xl rounded-2xl overflow-hidden relative border border-gray-100">
@@ -27,7 +28,7 @@ export const SetupView = () => {
                                     <svg class="w-5 h-5 mr-2 text-[#6455E5]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
                                     Privacidade
                                 </h3>
-                                <p class="text-gray-600 text-xs sm:text-sm leading-relaxed text-justify">Em estrita conformidade com a LGPD (Lei nº 13.709/2018), esta aplicação não coleta nenhum dado de identificação pessoal (como nome, e-mail, IP, áudio ou imagem). O sistema registrará exclusivamente dados técnicos de desempenho e métricas passivas de interação (como cliques e tempo).</p>
+                                <p class="text-gray-600 text-xs sm:text-sm leading-relaxed text-justify">O e-mail coletado será utilizado exclusivamente para a distribuição equilibrada dos blocos do experimento e controle de duplicidade. O sistema registrará também dados técnicos de desempenho e métricas passivas de interação (como cliques e tempo).</p>
                             </div>
 
                             <!-- CARD 3 -->
@@ -41,9 +42,15 @@ export const SetupView = () => {
                         </div>
                     </div>
 
-                    <div class="mt-6 pt-4 border-t border-gray-100 flex flex-col items-center">
+                    <div class="mt-6 pt-4 border-t border-gray-100 flex flex-col items-center w-full">
+                        <div class="w-full max-w-md mb-4 text-left">
+                            <label for="email-participante" class="block text-sm font-semibold text-gray-700 mb-1.5">E-mail do Participante</label>
+                            <input type="email" id="email-participante" name="email-participante" required 
+                                class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-[#6455E5]/20 focus:border-[#6455E5] outline-none transition-all shadow-sm placeholder-gray-400 text-gray-800" 
+                                placeholder="digite seu e-mail..." value="${emailSalvo}" />
+                        </div>
                         <p class="text-xs text-gray-500 mb-3 text-center max-w-lg">Ao clicar em avançar, você declara ser <strong>maior de 18 anos</strong> e autoriza o início da atividade sob estas condições de privacidade.</p>
-                        <button onclick="window.app.prepareTest()" class="w-full sm:w-auto px-8 py-3 rounded-xl font-medium text-[#ffffff] bg-[#6455E5] hover:opacity-90 transition-all shadow-md focus:outline-none focus:ring-2 focus:ring-[#6455E5] focus:ring-offset-2 flex items-center justify-center">
+                        <button onclick="window.iniciarExperimentoComIdentificador(document.getElementById('email-participante').value)" class="w-full sm:w-auto px-8 py-3 rounded-xl font-medium text-[#ffffff] bg-[#6455E5] hover:opacity-90 transition-all shadow-md focus:outline-none focus:ring-2 focus:ring-[#6455E5] focus:ring-offset-2 flex items-center justify-center">
                             Avançar para a Tarefa
                             <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                         </button>
